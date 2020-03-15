@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Domain.Entities
 {
     public class CuentaCorriente : CuentaBancaria
     {
-        public const double SOBREGIRO = -1000;
+        public const decimal SOBREGIRO = -1000;
 
-        public override void Retirar(double valor)
+        public void ValidarRetiro(decimal valor)
         {
-            double nuevoSaldo = Saldo - valor;
+            decimal nuevoSaldo = this.Saldo - valor;
             if (nuevoSaldo >= SOBREGIRO)
             {
-                MovimientoFinanciero movimiento = new MovimientoFinanciero();
-                movimiento.ValorRetiro = valor;
-                movimiento.FechaMovimiento = DateTime.Now;
-                Saldo -= valor;
-                this.Movimientos.Add(movimiento);
+                this.Retirar(valor);
             }
             else
             {

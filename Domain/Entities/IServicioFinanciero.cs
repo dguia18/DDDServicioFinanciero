@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Domain.Entities
 {
     public interface IServicioFinanciero
@@ -11,9 +8,9 @@ namespace Domain.Entities
         string Numero { get; set; }
         double Saldo { get; }
 
-        void Retirar(double valor);
-        void Consignar(double valor);
-        void Trasladar(IServicioFinanciero servicioFinanciero, double valor);
+        void Retirar(decimal valor);
+        void Consignar(decimal valor);
+        void Trasladar(IServicioFinanciero servicioFinanciero, decimal valor);
 
     }
 }

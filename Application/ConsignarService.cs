@@ -1,7 +1,5 @@
 ﻿using Domain.Contracts;
 using Domain.Entities;
-using Domain.Repositories;
-using System;
 
 namespace Application
 {
@@ -15,7 +13,8 @@ namespace Application
         }
         public ConsignarResponse Ejecutar(ConsignarRequest request)
         {
-            var cuenta = _unitOfWork.CuentaBancariaRepository.FindFirstOrDefault(t => t.Numero==request.NumeroCuenta);
+            var cuenta = _unitOfWork.CuentaBancariaRepository.
+                FindFirstOrDefault(t => t.Numero==request.NumeroCuenta);
             if (cuenta != null)
             {
                 cuenta.Consignar(request.Valor);
@@ -31,7 +30,7 @@ namespace Application
     public class ConsignarRequest
     {
         public string NumeroCuenta { get; set; }
-        public double Valor { get; set; }
+        public decimal Valor { get; set; }
     }
     public class ConsignarResponse
     {
