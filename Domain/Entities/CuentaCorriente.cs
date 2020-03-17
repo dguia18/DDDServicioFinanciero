@@ -6,12 +6,17 @@ namespace Domain.Entities
     {
         public const decimal SOBREGIRO = -1000;
 
+        public override void Retirar(decimal valor)
+        {
+            ValidarRetiro(valor);
+        }
+
         public void ValidarRetiro(decimal valor)
         {
             decimal nuevoSaldo = this.Saldo - valor;
             if (nuevoSaldo >= SOBREGIRO)
             {
-                this.Retirar(valor);
+                this.EjecutarRetiro(valor);
             }
             else
             {

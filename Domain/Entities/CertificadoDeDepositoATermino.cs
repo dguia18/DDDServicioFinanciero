@@ -6,30 +6,39 @@ namespace Domain.Entities
     public class CertificadoDeDepositoATermino : CuentaBancaria
     {
         private const decimal CONSIGNACION_INICIAL = 1000000;
-        public int PlazoDefinidoEnDias { get; set; }
-
+        public int DiasDeTermino { get; set; }
+        public CertificadoDeDepositoATermino()
+        {
+            this.DiasDeTermino = 30;
+        }
         public void ValidarConsignacion(decimal valor)
         {
             if (valor < CONSIGNACION_INICIAL)
             {
                 throw new ConsignacionInicialInvalidaException("El valor de la consignacion inicial" +
-                    " debe ser de 1000000");
+                    $" debe ser de {CONSIGNACION_INICIAL}");
             }
             else
             {
                 this.Consignar(valor);
             }
         }
-        public void ValidarRetirar(decimal valor, int diasTrasncurridos)
+        public override void Retirar(decimal valor)
         {
-            if (PlazoDefinidoEnDias <= diasTrasncurridos)
+            this.ValidarRetiro(valor);
+        }
+        public void ValidarRetiro(decimal valor)
+        {
+            TimeSpan time = DateTime.Now - this.FechaCreacion;
+            int restoDias = time.Days;
+            if (restoDias>= DiasDeTermino)
             {
                 this.Retirar(valor);   
             }
             else
             {
                 throw new RetiroInvalidoPorTiempoTranscurridoException($"No es posible retirar antes de los" +
-                    $"{PlazoDefinidoEnDias} definidos en el contrato");
+                    $"{DiasDeTermino} definidos en el contrato");
             }
         }
        

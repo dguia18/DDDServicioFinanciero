@@ -9,25 +9,32 @@ namespace Domain.Entities
         protected CuentaBancaria()
         {
             Movimientos = new List<MovimientoFinanciero>();
+            this.FechaCreacion = DateTime.Now;
         }
 
         public List<MovimientoFinanciero> Movimientos { get; set; }
         public string Nombre { get; set; }
         public string Numero { get; set; }
         public decimal Saldo { get; protected set; }
+        public DateTime FechaCreacion { get; }
 
         double IServicioFinanciero.Saldo => throw new NotImplementedException();
 
         public virtual void Consignar(decimal valor)
+        {
+            this.EjecutarConsignacion(valor);
+        }                
+        protected void EjecutarConsignacion(decimal valor)
         {
             MovimientoFinanciero movimiento = new MovimientoFinanciero();
             movimiento.ValorConsignacion = valor;
             movimiento.FechaMovimiento = DateTime.Now;
             Saldo += valor;
             Movimientos.Add(movimiento);
-        }                
+        }
+        public abstract void Retirar(decimal valor);        
 
-        public void Retirar(decimal valor)
+        protected void EjecutarRetiro(decimal valor)
         {
             MovimientoFinanciero retiro = new MovimientoFinanciero();
             retiro.ValorRetiro = valor;

@@ -7,7 +7,7 @@ namespace Application
     {
         readonly IUnitOfWork _unitOfWork;
         
-        public ConsignarService(IUnitOfWork unitOfWork)
+        public  ConsignarService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
