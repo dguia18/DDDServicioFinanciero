@@ -5,49 +5,109 @@ namespace Domain.Entities
 {
     public class CertificadoDeDepositoATermino : ServicioFinanciero
     {
-        private const decimal CONSIGNACION_INICIAL = 1000000;
+        public const decimal VALOR_CONSIGNACION_INICIAL = 1000000;
+        public bool TieneConsignacion { get; set; }
         public int DiasDeTermino { get; set; }
         public CertificadoDeDepositoATermino()
         {
             this.DiasDeTermino = 30;
         }
-        public void ValidarConsignacion(decimal valor)
+        public override string Consignar(decimal valor, string ciudadDeOrigen)
         {
-            if (valor < CONSIGNACION_INICIAL)
+            return ValidarMontoNoNegativoDeConsignacion(valor);
+        }
+        private string ValidarMontoNoNegativoDeConsignacion(decimal valor)
+        {
+            string respuesta;
+            if (valor > 0)
             {
-                throw new ConsignacionInicialInvalidaException("El valor de la consignacion inicial" +
-                    $" debe ser de {CONSIGNACION_INICIAL}");
+                respuesta = ValidarUnicaConsignacion(valor);
+            }
+            else
+            {
+                respuesta = "El valor a consignar es incorrecto";
+            }
+            return respuesta;
+        }
+        private string ValidarUnicaConsignacion(decimal valor)
+        {
+            string respuesta;
+            if (!TieneConsignacion)
+            {
+                respuesta = ValidarValorConsignacion(valor);
+            }
+            else
+            {
+                respuesta = "No es posible realizar una segunda consignacion";
+            }
+            return respuesta;
+        }
+        public string ValidarValorConsignacion(decimal valor)
+        {
+            string respuesta;
+            if (valor < VALOR_CONSIGNACION_INICIAL)
+            {
+                respuesta = "El valor de la consignacion inicial" +
+                    $" debe ser de {VALOR_CONSIGNACION_INICIAL}";
             }
             else
             {
                 this.EjecutarConsignacion(valor);
+                this.TieneConsignacion = true;
+                respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
+            return respuesta;
         }
         public override string Retirar(decimal valor)
-        {
-            this.ValidarRetiro(valor);
-            return "";
+        {            
+            return ValidarValorNoNegativoRetiro(valor);
         }
-        public void ValidarRetiro(decimal valor)
+        
+        private string ValidarValorNoNegativoRetiro(decimal valor)
         {
-            TimeSpan time = DateTime.Now - this.FechaCreacion;
-            int restoDias = time.Days;
-            if (restoDias>= DiasDeTermino)
+            string respuesta;
+            if (valor > 0)
             {
-                this.Retirar(valor);   
+                respuesta = VerificarDiasDeTerminoParaRetiro(valor);
             }
             else
             {
-                throw new RetiroInvalidoPorTiempoTranscurridoException($"No es posible retirar antes de los" +
-                    $"{DiasDeTermino} definidos en el contrato");
+                respuesta = "El valor a retirar es incorrecto";
             }
+            return respuesta;
+        }
+        public string VerificarDiasDeTerminoParaRetiro(decimal valor)
+        {
+            string respuesta;
+            TimeSpan time = DateTime.Now - this.FechaCreacion;
+            int restoDias = time.Days;
+            if (restoDias >= DiasDeTermino)
+            {
+                respuesta = ValidarSaldoMinimo(valor);
+            }
+            else
+            {
+                respuesta = $"No es posible retirar antes de los" +
+                    $"{DiasDeTermino} definidos en el contrato";
+            }
+            return respuesta;
+        }
+        private string ValidarSaldoMinimo(decimal valor)
+        {
+            string respuesta;
+            decimal nuevoSaldo = this.Saldo - valor;
+            if(nuevoSaldo >= 0)
+            {
+                this.EjecutarRetiro(valor);
+                respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
+            }
+            else
+            {
+                respuesta = $"No es posible realizar el retiro por falta de saldo, su saldo: {this.Saldo}";
+            }
+            return respuesta;
         }
 
-        public override string Consignar(decimal valor, string ciudadDeOrigen)
-        {
-            this.ValidarConsignacion(valor);
-            return "";
-        }
     }
     [Serializable]
     public class ConsignacionInicialInvalidaException : Exception
