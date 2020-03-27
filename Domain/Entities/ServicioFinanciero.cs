@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Domain.Entities
 {
-    public abstract class CuentaBancaria : Entity<int>, IServicioFinanciero
+    public abstract class ServicioFinanciero : Entity<int>, IServicioFinanciero
     {
-        protected CuentaBancaria()
+        protected ServicioFinanciero()
         {
             Movimientos = new List<MovimientoFinanciero>();
             this.FechaCreacion = DateTime.Now;
@@ -15,15 +15,14 @@ namespace Domain.Entities
         public List<MovimientoFinanciero> Movimientos { get; set; }
         public string Nombre { get; set; }
         public string Numero { get; set; }
-        public decimal Saldo { get; protected set; }
+        public decimal Saldo { get;  set; }
+        public string Ciudad { get; set; }
         public DateTime FechaCreacion { get; }
 
         double IServicioFinanciero.Saldo => throw new NotImplementedException();
 
-        public virtual void Consignar(decimal valor)
-        {
-            this.EjecutarConsignacion(valor);
-        }                
+        public abstract string Consignar(decimal valor, string ciudadDeOrigen);
+                       
         protected void EjecutarConsignacion(decimal valor)
         {
             MovimientoFinanciero movimiento = new MovimientoFinanciero();
@@ -32,7 +31,7 @@ namespace Domain.Entities
             Saldo += valor;
             Movimientos.Add(movimiento);
         }
-        public abstract void Retirar(decimal valor);        
+        public abstract string Retirar(decimal valor);        
 
         protected void EjecutarRetiro(decimal valor)
         {
@@ -48,10 +47,22 @@ namespace Domain.Entities
             return ($"Su saldo disponible es {Saldo}.");
         }
 
-        public void Trasladar(IServicioFinanciero servicioFinanciero, decimal valor)
+        protected List<MovimientoFinanciero> ObtenerRetiros()
+        {
+            return this.Movimientos.FindAll(movimiento => movimiento.ValorRetiro != 0);
+        }
+
+        protected List<MovimientoFinanciero> ObtenerRetirosPorFecha(int mes, int anio)
+        {
+            return this.ObtenerRetiros().FindAll(movimiento => movimiento.FechaMovimiento.Month == mes &&
+                                                                movimiento.FechaMovimiento.Year == anio);
+        }
+
+        public string Trasladar(IServicioFinanciero servicioFinanciero, decimal valor)
         {
             Retirar(valor);
-            servicioFinanciero.Consignar(valor);
+            servicioFinanciero.Consignar(valor, "");
+            return "";
         }
         
     }

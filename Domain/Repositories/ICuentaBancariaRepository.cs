@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Domain.Repositories
 {
-    public interface ICuentaBancariaRepository : IGenericRepository<CuentaBancaria>
+    public interface ICuentaBancariaRepository : IGenericRepository<ServicioFinanciero>
     {
     }
 }

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Domain.Entities
 {
-    public class CertificadoDeDepositoATermino : CuentaBancaria
+    public class CertificadoDeDepositoATermino : ServicioFinanciero
     {
         private const decimal CONSIGNACION_INICIAL = 1000000;
         public int DiasDeTermino { get; set; }
@@ -20,12 +20,13 @@ namespace Domain.Entities
             }
             else
             {
-                this.Consignar(valor);
+                this.EjecutarConsignacion(valor);
             }
         }
-        public override void Retirar(decimal valor)
+        public override string Retirar(decimal valor)
         {
             this.ValidarRetiro(valor);
+            return "";
         }
         public void ValidarRetiro(decimal valor)
         {
@@ -41,7 +42,12 @@ namespace Domain.Entities
                     $"{DiasDeTermino} definidos en el contrato");
             }
         }
-       
+
+        public override string Consignar(decimal valor, string ciudadDeOrigen)
+        {
+            this.ValidarConsignacion(valor);
+            return "";
+        }
     }
     [Serializable]
     public class ConsignacionInicialInvalidaException : Exception

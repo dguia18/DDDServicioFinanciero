@@ -17,10 +17,10 @@ namespace Application
         }
         public CrearCuentaBancariaResponse Ejecutar(CrearCuentaBancariaRequest request)
         {
-            CuentaBancaria cuenta = _unitOfWork.CuentaBancariaRepository.FindFirstOrDefault(t => t.Numero==request.Numero);
+            ServicioFinanciero cuenta = _unitOfWork.CuentaBancariaRepository.FindFirstOrDefault(t => t.Numero==request.Numero);
             if (cuenta == null)
             {                
-                CuentaBancaria cuentaNueva = (CuentaBancaria) servicioFinancieroFactory.GetServicioFinanciero(request.TipoCuenta);//Debe ir un factory que determine que tipo de cuenta se va a crear
+                ServicioFinanciero cuentaNueva = (ServicioFinanciero) servicioFinancieroFactory.GetServicioFinanciero(request.TipoCuenta);//Debe ir un factory que determine que tipo de cuenta se va a crear
                 cuentaNueva.Nombre = request.Nombre;
                 cuentaNueva.Numero = request.Numero;
                 _unitOfWork.CuentaBancariaRepository.Add(cuentaNueva);

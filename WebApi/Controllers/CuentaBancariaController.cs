@@ -35,5 +35,12 @@ namespace WebApi.Controllers
             var response = _service.Ejecutar(request);
             return Ok(response);
         }
+        [HttpPost("retiro")]
+        public ActionResult<RetirarResponse> Post(RetirarRequest request)
+        {
+            var _service = new RetirarService(new UnitOfWork(_context));
+            var response = _service.Ejecutar(request);
+            return Ok(response);
+        }
     }
 }

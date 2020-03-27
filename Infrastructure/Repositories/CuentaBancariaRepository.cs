@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Infrastructure.Repositories
 {
-    public class CuentaBancariaRepository : GenericRepository<CuentaBancaria>, ICuentaBancariaRepository
+    public class CuentaBancariaRepository : GenericRepository<ServicioFinanciero>, ICuentaBancariaRepository
     {
         public CuentaBancariaRepository(IDbContext context)
               : base(context)

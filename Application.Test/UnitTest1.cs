@@ -24,7 +24,7 @@ namespace Application.Test
         [Test]
         public void CrearCuentaBancariaTest()
         {
-            var request = new CrearCuentaBancariaRequest { Numero = "1111", Nombre = "aaaaa", TipoCuenta = "Ahorro" };
+            var request = new CrearCuentaBancariaRequest { Numero = "1111", Nombre = "aaaaa", TipoCuenta = 0 };
             CrearCuentaBancariaService _service = new CrearCuentaBancariaService(new UnitOfWork(_context));
             var response = _service.Ejecutar(request);
             Assert.AreEqual("Se creó con exito la cuenta 1111.", response.Mensaje);
