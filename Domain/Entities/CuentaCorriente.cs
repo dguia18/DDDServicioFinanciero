@@ -7,26 +7,39 @@ namespace Domain.Entities
         public decimal CupoDeSobregiro { get; set; }
         private const decimal VALOR_MINIMO_CONSIGNACION_INICIAL = 10000;
         private const decimal CUATRO_X_MIL = 4/1000;
-        public bool IsConsignacionInicial { get; set; }
+        public bool tieneConsignaciones { get; set; }
         public CuentaCorriente()
         {
-            this.IsConsignacionInicial = false;
+            this.tieneConsignaciones = false;
         }
         public override string Consignar(decimal valor, string ciudadDeOrigen)
         {            
-            return VerificarIsConsignacionInicial(valor);
+            return ValidarValorNoNegativoAConsignar(valor);
+        }
+        private string ValidarValorNoNegativoAConsignar(decimal valor)
+        {
+            string respuesta;
+            if (valor > 0)
+            {
+                respuesta = VerificarIsConsignacionInicial(valor);
+            }
+            else
+            {
+                respuesta = "El valor a consignar es incorrecto";
+            }
+            return respuesta;
         }
         private string VerificarIsConsignacionInicial(decimal valor)
         {
             string respuesta;
-            if (IsConsignacionInicial)
-            {
-                respuesta = ValidarValorConsignacioInicial(valor);
-            }
-            else
+            if (tieneConsignaciones)
             {
                 this.EjecutarConsignacion(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
+            }
+            else
+            {
+                respuesta = ValidarValorConsignacioInicial(valor);
             }
             return respuesta;
         }
@@ -37,6 +50,7 @@ namespace Domain.Entities
             {
                 this.EjecutarConsignacion(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
+                this.tieneConsignaciones = true;
             }
             else
             {
@@ -46,8 +60,21 @@ namespace Domain.Entities
         }
         public override string Retirar(decimal valor)
         {
-            return VerificarSaldoMinimo(valor);
-        }        
+            return ValidarValorNoNegativo(valor);
+        }   
+        private string ValidarValorNoNegativo(decimal valor)
+        {
+            string respuesta;
+            if(valor > 0)
+            {
+                respuesta = VerificarSaldoMinimo(valor);
+            }
+            else
+            {
+                respuesta = "El valor a retirar es incorrecto";
+            }
+            return respuesta;
+        }
         private string VerificarSaldoMinimo(decimal valor)
         {
             string respuesta;
@@ -60,7 +87,8 @@ namespace Domain.Entities
             }
             else
             {
-                respuesta = $"No es posible realizar el retiro, su saldo es menor al cupo de sobregiro contratado";
+                respuesta = $"No es posible realizar el retiro, su saldo es menor al cupo " +
+                    $"de sobregiro contratado:{this.CupoDeSobregiro}";
             }
             return respuesta;
         }
