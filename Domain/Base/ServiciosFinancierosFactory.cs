@@ -4,7 +4,7 @@ using Domain.Enum;
 
 namespace Domain.Base
 {
-    public class CuentaBancariaFactory : ServicioFinancieroFactory
+    public class ServiciosFinancierosFactory : Factory
     {
         public override IServicioFinanciero GetServicioFinanciero(int servicioFinanciero)
         {

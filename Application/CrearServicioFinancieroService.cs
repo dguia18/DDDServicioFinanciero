@@ -5,15 +5,15 @@ using System;
 
 namespace Application
 {
-    public class CrearCuentaBancariaService
+    public class CrearServicioFinancieroService
     {
         readonly IUnitOfWork _unitOfWork;
-        readonly ServicioFinancieroFactory servicioFinancieroFactory;
+        readonly Factory servicioFinancieroFactory;
         
-        public CrearCuentaBancariaService(IUnitOfWork unitOfWork)
+        public CrearServicioFinancieroService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            servicioFinancieroFactory = ServicioFinancieroFactory.CrearServicioFinancieroFactory(0);
+            servicioFinancieroFactory = Factory.CrearServicioFinancieroFactory(0);
         }
         public CrearCuentaBancariaResponse Ejecutar(CrearCuentaBancariaRequest request)
         {

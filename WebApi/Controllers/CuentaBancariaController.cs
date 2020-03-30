@@ -23,7 +23,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public ActionResult<CrearCuentaBancariaResponse> Post(CrearCuentaBancariaRequest request)
         {
-            CrearCuentaBancariaService _service = new CrearCuentaBancariaService(_unitOfWork);
+            CrearServicioFinancieroService _service = new CrearServicioFinancieroService(_unitOfWork);
             CrearCuentaBancariaResponse response = _service.Ejecutar(request);
             return Ok(response);
         }

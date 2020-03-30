@@ -42,7 +42,7 @@ namespace ConsoleUI
         {
             #region  Crear
 
-            CrearCuentaBancariaService _service = new CrearCuentaBancariaService(new UnitOfWork(context));
+            CrearServicioFinancieroService _service = new CrearServicioFinancieroService(new UnitOfWork(context));
             var requestCrer = new CrearCuentaBancariaRequest() { Numero = "524255", Nombre = "Boris Arturo" };
 
             CrearCuentaBancariaResponse responseCrear = _service.Ejecutar(requestCrer);
