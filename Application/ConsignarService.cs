@@ -1,5 +1,7 @@
 ﻿using Domain.Contracts;
 using Domain.Entities;
+using System;
+using System.Collections.Generic;
 
 namespace Application
 {
@@ -17,8 +19,17 @@ namespace Application
                 FindFirstOrDefault(t => t.Numero==request.NumeroCuenta);
             if (cuenta != null)
             {
-                string respuesta = cuenta.Consignar(request.Valor,request.CiudadDeConsignacion);
-                _unitOfWork.Commit();
+                string respuesta;
+                IReadOnlyList <String> errores = cuenta.CanConsign(request.Valor);
+                if(errores.Count!=0)
+                {
+                    respuesta = String.Join(", ", errores);
+                }
+                else
+                {
+                    respuesta = cuenta.Consignar(request.Valor,request.CiudadDeConsignacion);
+                    _unitOfWork.Commit();
+                }
                 return new ConsignarResponse() { Mensaje = respuesta };
             }
             else

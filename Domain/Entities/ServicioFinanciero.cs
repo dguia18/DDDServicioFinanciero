@@ -42,9 +42,16 @@ namespace Domain.Entities
             this.Movimientos.Add(retiro);
         }
 
+        public abstract IReadOnlyList<String> CanConsign(decimal valor);
+        public abstract IReadOnlyList<String> CanWithDraw(decimal valor);
+
         public override string ToString()
         {
             return ($"Su saldo disponible es {Saldo}.");
+        }
+        protected IReadOnlyCollection<MovimientoFinanciero> GetConsignaciones()
+        {
+            return this.Movimientos.FindAll(movimiento => movimiento.ValorConsignacion > 0);
         }
 
         protected List<MovimientoFinanciero> ObtenerRetiros()

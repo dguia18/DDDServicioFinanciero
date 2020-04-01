@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Domain.Entities
 {
@@ -12,9 +13,34 @@ namespace Domain.Entities
         {
             this.tieneConsignaciones = false;
         }
+        public override IReadOnlyList<string> CanConsign(decimal valor)
+        {
+            var errores = new List<string>();
+            if (this.GetConsignaciones().Count == 0 && valor < VALOR_MINIMO_CONSIGNACION_INICIAL)
+                errores.Add($"No es posible realizar la consignacion," +
+                    $" el monto minimo debe ser de: {VALOR_MINIMO_CONSIGNACION_INICIAL}");
+            if (valor <= 0)
+                errores.Add("El valor a consignar es incorrecto");
+            return errores;
+        }
+
+        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        {
+            var errores = new List<string>();            
+            decimal nuevoSaldo = this.Saldo - valor;
+            if (nuevoSaldo < CupoDeSobregiro)
+                errores.Add($"No es posible realizar el retiro, su saldo es menor al cupo " +
+                    $"de sobregiro contratado:{this.CupoDeSobregiro}");            
+            if (valor <= 0)
+                errores.Add("El valor a retirar es incorrecto");
+            return errores;
+        }
         public override string Consignar(decimal valor, string ciudadDeOrigen)
-        {            
-            return ValidarValorNoNegativoAConsignar(valor);
+        {
+            if (CanConsign(valor).Count > 0)
+                throw new InvalidOperationException();
+            this.EjecutarConsignacion(valor);
+            return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
         private string ValidarValorNoNegativoAConsignar(decimal valor)
         {
@@ -60,7 +86,9 @@ namespace Domain.Entities
         }
         public override string Retirar(decimal valor)
         {
-            return ValidarValorNoNegativo(valor);
+            valor = DebitarCuatroXMil(valor);
+            this.EjecutarRetiro(valor);
+            return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }   
         private string ValidarValorNoNegativo(decimal valor)
         {
@@ -96,7 +124,7 @@ namespace Domain.Entities
         private decimal DebitarCuatroXMil(decimal valor)
         {
             return valor * (1 - CUATRO_X_MIL);
-        }
+        }       
     }
 
     [Serializable]

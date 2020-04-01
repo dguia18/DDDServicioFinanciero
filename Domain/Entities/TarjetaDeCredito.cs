@@ -12,9 +12,21 @@ namespace Domain.Entities
             this.CupoPreAprobado = valor;
             this.Saldo = valor;
         }
+        public override IReadOnlyList<string> CanConsign(decimal valor)
+        {
+            var errores = new List<string>();
+            if (valor > this.Saldo)            
+                errores.Add ($"El valor del abono no puede superar el saldo de: {this.Saldo}");                        
+            if (valor <= 0)
+                errores.Add("El valor a abonar es incorrecto");            
+
+            return errores;
+        }        
         public override string Consignar(decimal valor, string ciudadDeOrigen)
         {
-            return ValidarAbonoNegativoOCero(valor);
+            if (CanConsign(valor).Count > 0)
+                throw new InvalidOperationException();
+            return EjecutarAbono(valor);
         }
         private string ValidarAbonoNegativoOCero(decimal valor)
         {
@@ -50,10 +62,24 @@ namespace Domain.Entities
             this.Saldo -= 2 * valor;
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
+        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        {
+            var errores = new List<string>();
+            TimeSpan time = DateTime.Now - this.FechaCreacion;
+            int restoDias = time.Days;
+            if (valor > CupoPreAprobado)
+                errores.Add($"El valor a avanzar no puede ser mayor al " +
+                    $"cupo pre-aprobado: {this.CupoPreAprobado}");
+            if (valor <= 0)
+                errores.Add("El valor a avanzar es incorrecto");            
 
+            return errores;
+        }
         public override string Retirar(decimal valor)
         {
-            return ValidarAvanceNoNegativoOCero(valor);
+            if (CanWithDraw(valor).Count > 0)
+                throw new InvalidOperationException();
+            return EjecutarAvance(valor);
         }
         private string ValidarAvanceNoNegativoOCero(decimal valor)
         {
@@ -88,5 +114,7 @@ namespace Domain.Entities
             this.EjecutarRetiro(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
+
+        
     }
 }

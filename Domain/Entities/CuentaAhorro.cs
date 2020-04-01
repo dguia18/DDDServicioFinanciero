@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Domain.Entities
 {
@@ -20,10 +21,25 @@ namespace Domain.Entities
         {
             this.isConsignacionInicial = isConsignacionInicial;
         }
-
+        public override IReadOnlyList<string> CanConsign(decimal valor)
+        {
+            var errores = new List<string>();
+            if (this.GetConsignaciones().Count == 0 && valor < VALOR_CONSIGNACION_INICIAL)
+                errores.Add("El valor mínimo de la primera consignación debe ser" +
+                            $"de ${VALOR_CONSIGNACION_INICIAL} mil pesos.");
+            if (valor <= 0)
+                errores.Add("El valor a consignar es incorrecto");
+            return errores;
+        }
+                
         public override string Consignar(decimal valor, string ciudadDeOrigen)
         {
-            return IsPrimeraConsignacion(valor, ciudadDeOrigen);
+
+            if (CanConsign(valor).Count != 0)
+                throw new InvalidOperationException();
+            valor = this.IncluirCostoPorCiudadDiferente(valor, ciudadDeOrigen);
+            this.EjecutarConsignacion(valor);
+            return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
         private string IsPrimeraConsignacion(decimal valor, string ciudadDeOrigen)
         {
@@ -81,10 +97,24 @@ namespace Domain.Entities
         {
             return !ciudadDeOrigen.Equals(this.Ciudad) ? valor * (1 - DESCUENTO_POR_SUCURSAL_EN_OTRA_CIUDAD) : valor;
         }
+        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        {
+            var errores = new List<string>();
+            decimal nuevoSaldo = Saldo - valor;
+            if (nuevoSaldo < SALDO_MINIMO)
+                errores.Add($"No es posible realizar el Retiro, el nuevo saldo es menor al minimo, ${SALDO_MINIMO}");        
+            if (valor <= 0)
+                errores.Add("El valor a consignar es incorrecto");
+            return errores;
+        }
 
         public override string Retirar(decimal valor)
-        {            
-            return IsMontoNoNegativo(valor);
+        {
+            if (CanWithDraw(valor).Count > 0)
+                throw new InvalidOperationException();
+            valor = IncluirCostoPorCantidadDeRetiros(valor);
+            this.EjecutarRetiro(valor);
+            return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
 
         private string IsMontoNoNegativo(decimal valor)
@@ -130,6 +160,8 @@ namespace Domain.Entities
             }
             return valor;
         }
+
+       
     }
 
 

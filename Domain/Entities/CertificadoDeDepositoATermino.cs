@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Domain.Entities
@@ -12,9 +13,28 @@ namespace Domain.Entities
         {
             this.DiasDeTermino = 30;
         }
+        public override IReadOnlyList<string> CanConsign(decimal valor)
+        {
+            var errores = new List<string>();
+            TimeSpan time = DateTime.Now - this.FechaCreacion;
+            int restoDias = time.Days;
+            if (this.GetConsignaciones().Count == 0 && valor < VALOR_CONSIGNACION_INICIAL)
+                errores.Add("El valor de la consignacion inicial" +
+                    $" debe ser de {VALOR_CONSIGNACION_INICIAL}");
+            if (this.GetConsignaciones().Count > 0 && restoDias <= DiasDeTermino)
+                errores.Add("No es posible realizar una segunda consignacion");
+            if (valor <= 0)
+                errores.Add("El valor a consignar es incorrecto");
+            return errores;
+        }
+
+
         public override string Consignar(decimal valor, string ciudadDeOrigen)
         {
-            return ValidarMontoNoNegativoDeConsignacion(valor);
+            if (CanConsign(valor).Count > 0)
+                throw new InvalidOperationException();
+            this.EjecutarConsignacion(valor);
+            return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
         private string ValidarMontoNoNegativoDeConsignacion(decimal valor)
         {
@@ -58,11 +78,30 @@ namespace Domain.Entities
             }
             return respuesta;
         }
-        public override string Retirar(decimal valor)
-        {            
-            return ValidarValorNoNegativoRetiro(valor);
+        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        {
+            var errores = new List<string>();
+            TimeSpan time = DateTime.Now - this.FechaCreacion;
+            int restoDias = time.Days;
+            if (restoDias <= DiasDeTermino)
+                errores.Add($"No es posible retirar antes de los" +
+                    $"{DiasDeTermino} definidos en el contrato");
+            if (valor <= 0)
+                errores.Add("El valor a consignar es incorrecto");
+            decimal nuevoSaldo = this.Saldo - valor;
+            if (nuevoSaldo < 0)
+                errores.Add($"No es posible realizar el retiro por falta de saldo, su saldo: {this.Saldo}");
+
+            return errores;
         }
-        
+        public override string Retirar(decimal valor)
+        {
+            if (CanWithDraw(valor).Count > 0)
+                throw new InvalidOperationException();
+            this.EjecutarRetiro(valor);
+            return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
+        }
+
         private string ValidarValorNoNegativoRetiro(decimal valor)
         {
             string respuesta;
@@ -96,7 +135,7 @@ namespace Domain.Entities
         {
             string respuesta;
             decimal nuevoSaldo = this.Saldo - valor;
-            if(nuevoSaldo >= 0)
+            if (nuevoSaldo >= 0)
             {
                 this.EjecutarRetiro(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
@@ -107,6 +146,7 @@ namespace Domain.Entities
             }
             return respuesta;
         }
+
 
     }
     [Serializable]
