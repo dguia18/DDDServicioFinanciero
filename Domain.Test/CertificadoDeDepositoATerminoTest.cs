@@ -22,9 +22,17 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
 
-            string respuesta = cdt.Consignar(-500, "No implementa");
+            IList<string> errores = cdt.CanConsign(-500);
+            string obtenido;
+            string esperado = "El valor a consignar es incorrecto";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Consignar(-500, "No implementa");
 
-            Assert.AreEqual("El valor a consignar es incorrecto", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
+
         }
         [Test]
         public void ConsignacionInicialIncorrecta()
@@ -35,10 +43,17 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
 
-            string respuesta = cdt.Consignar(500, "No implementa");
+            IList<string> errores = cdt.CanConsign(500);
+            string obtenido;
+            string esperado = "El valor de la consignacion inicial" +
+                    $" debe ser de {CertificadoDeDepositoATermino.VALOR_CONSIGNACION_INICIAL}";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Consignar(500, "No implementa");
 
-            Assert.AreEqual("El valor de la consignacion inicial" +
-                    $" debe ser de {CertificadoDeDepositoATermino.VALOR_CONSIGNACION_INICIAL}", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void ConsignacionInicialCorrecta()
@@ -49,9 +64,16 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
 
-            string respuesta = cdt.Consignar(1500000, "No implementa");
+            IList<string> errores = cdt.CanConsign(1500000);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${1500000} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Consignar(1500000, "No implementa");
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${cdt.Saldo} pesos", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void DobleConsignacion()
@@ -62,10 +84,18 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
 
-            string respuesta = cdt.Consignar(1500000, "No implementa");
-            respuesta = cdt.Consignar(1500000, "No implementa");
+            cdt.Consignar(1500000, "No implementa");
+            IList<string> errores = cdt.CanConsign(1500000);
+            string obtenido;
+            string esperado = "No es posible realizar una segunda consignacion";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Consignar(1500000, "No implementa");
 
-            Assert.AreEqual("No es posible realizar una segunda consignacion", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
+
         }
 
         //Retiros
@@ -79,9 +109,16 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
 
-            string respuesta = cdt.Retirar(-500);
+            IList<string> errores = cdt.CanWithDraw(-500);
+            string obtenido;
+            string esperado = "El valor a retirar es incorrecto";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Retirar(-500);
 
-            Assert.AreEqual("El valor a retirar es incorrecto", respuesta);
+            Assert.AreEqual(esperado, obtenido);
+
         }
         [Test]
         public void RetiroAntesDeLosDiasDeTermino()
@@ -92,10 +129,17 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
 
-            string respuesta = cdt.Retirar(500);
+            IList<string> errores = cdt.CanWithDraw(500);
+            string obtenido;
+            string esperado = $"No es posible retirar antes de los" +
+                    $"{cdt.DiasDeTermino} definidos en el contrato";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Retirar(500);
 
-            Assert.AreEqual($"No es posible retirar antes de los" +
-                    $"{cdt.DiasDeTermino} definidos en el contrato", respuesta);
+            Assert.AreEqual(esperado, obtenido);
+            
         }
         [Test]
         public void RetiroDejandoSaldoNegativo()
@@ -106,9 +150,16 @@ namespace Domain.Test
             cdt.Numero = numeroDeCuenta;
             cdt.Nombre = nombreDeCuenta;
             cdt.DiasDeTermino = -1;
-            string respuesta = cdt.Retirar(500);
+            IList<string> errores = cdt.CanWithDraw(500);
+            string obtenido;
+            string esperado = $"No es posible realizar el retiro por falta de saldo, su saldo: {cdt.Saldo}";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Retirar(500);
 
-            Assert.AreEqual($"No es posible realizar el retiro por falta de saldo, su saldo: {cdt.Saldo}", respuesta);
+            Assert.AreEqual(esperado, obtenido);
+
         }  
         [Test]
         public void RetiroExitoso()
@@ -120,9 +171,16 @@ namespace Domain.Test
             cdt.Nombre = nombreDeCuenta;
             cdt.DiasDeTermino = -1;//Con tal de validarlo
             cdt.Consignar(1500000, "No implementa");
-            string respuesta = cdt.Retirar(500);
+            IList<string> errores = cdt.CanWithDraw(500);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${1500000-500} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cdt.Retirar(500);
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${cdt.Saldo} pesos", respuesta);
+            Assert.AreEqual(esperado, obtenido);
+
         }        
     }
 }

@@ -13,7 +13,7 @@ namespace Domain.Entities
         {
             this.DiasDeTermino = 30;
         }
-        public override IReadOnlyList<string> CanConsign(decimal valor)
+        public override IList<string> CanConsign(decimal valor)
         {
             var errores = new List<string>();
             TimeSpan time = DateTime.Now - this.FechaCreacion;
@@ -78,7 +78,7 @@ namespace Domain.Entities
             }
             return respuesta;
         }
-        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        public override IList<string> CanWithDraw(decimal valor)
         {
             var errores = new List<string>();
             TimeSpan time = DateTime.Now - this.FechaCreacion;
@@ -87,7 +87,7 @@ namespace Domain.Entities
                 errores.Add($"No es posible retirar antes de los" +
                     $"{DiasDeTermino} definidos en el contrato");
             if (valor <= 0)
-                errores.Add("El valor a consignar es incorrecto");
+                errores.Add("El valor a retirar es incorrecto");
             decimal nuevoSaldo = this.Saldo - valor;
             if (nuevoSaldo < 0)
                 errores.Add($"No es posible realizar el retiro por falta de saldo, su saldo: {this.Saldo}");

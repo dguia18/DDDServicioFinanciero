@@ -1,9 +1,11 @@
 using Domain.Entities;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace Domain.Test
 {
-    public class Tests
+    public class CuentaAhorroTest
     {
         [SetUp]
         public void Setup()
@@ -11,19 +13,25 @@ namespace Domain.Test
         }
 
         [Test]
-        public void AbonoMenorACero()
+        public void ConsignacionMenorACero()
         {
             string numeroDeCuenta = "1001";
             string nombreDeCuenta = "Cuenta de Ejemplo";
             string ciudad = "Valledupar";
-            ServicioFinanciero servicios = new CuentaAhorro();
-            servicios.Numero = numeroDeCuenta;
-            servicios.Nombre = nombreDeCuenta;
-            servicios.Ciudad = ciudad;
+            ServicioFinanciero cuentaDeAhorro = new CuentaAhorro();
+            cuentaDeAhorro.Numero = numeroDeCuenta;
+            cuentaDeAhorro.Nombre = nombreDeCuenta;
+            cuentaDeAhorro.Ciudad = ciudad;
+            IList<string> errores = cuentaDeAhorro.CanConsign(-500);
+            string obtenido = "";
+            string esperado = "El valor a consignar es incorrecto";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Consignar(-500, "Valledupar");
 
-            string respuesta = servicios.Consignar(-500, "Valledupar");
 
-            Assert.AreEqual("El valor a consignar es incorrecto", respuesta);
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void ConsignacionInicialCorrecta()
@@ -35,10 +43,15 @@ namespace Domain.Test
             cuentaDeAhorro.Numero = numeroDeCuenta;
             cuentaDeAhorro.Nombre = nombreDeCuenta;
             cuentaDeAhorro.Ciudad = ciudad;
-            cuentaDeAhorro.SetIsConsignacionInicial(true);
-            string respuesta = cuentaDeAhorro.Consignar(50000, "Valledupar");
+            IList<string> errores = cuentaDeAhorro.CanConsign(50000);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de $50000 pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Consignar(50000, "Valledupar");
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${cuentaDeAhorro.Saldo} pesos", respuesta);
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void ConsignacionInicialInCorrecta()
@@ -50,12 +63,16 @@ namespace Domain.Test
             cuentaDeAhorro.Numero = numeroDeCuenta;
             cuentaDeAhorro.Nombre = nombreDeCuenta;
             cuentaDeAhorro.Ciudad = ciudad;
-            cuentaDeAhorro.SetIsConsignacionInicial(true);
-            string respuesta = cuentaDeAhorro.Consignar(49950, "Valledupar");
-
-            Assert.AreEqual("El valor mínimo de la primera consignación debe ser" +
-                                $"de ${50000} mil pesos. " +
-                                $"Su nuevo saldo es ${cuentaDeAhorro.Saldo} pesos", respuesta);
+            IList<string> errores = cuentaDeAhorro.CanConsign(49950);
+            string obtenido;
+            string esperado = "El valor mínimo de la primera consignación debe ser" +
+                                $"de ${CuentaAhorro.VALOR_CONSIGNACION_INICIAL} mil pesos.";
+                                
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Consignar(49950, "Valledupar");
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void ConsignacionPosteriorALaInicialCorrecta()
@@ -67,13 +84,20 @@ namespace Domain.Test
             cuentaDeAhorro.Numero = numeroDeCuenta;
             cuentaDeAhorro.Nombre = nombreDeCuenta;
             cuentaDeAhorro.Ciudad = ciudad;
-            cuentaDeAhorro.Saldo =30000;
-            string respuesta = cuentaDeAhorro.Consignar(49950, "Valledupar");
+            cuentaDeAhorro.Consignar(50000,"Valledupar");
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${cuentaDeAhorro.Saldo} pesos", respuesta);
+            IList<string> errores = cuentaDeAhorro.CanConsign(49950);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${50000+49950} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Consignar(49950, "Valledupar");            
+
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
-        public void ConsignacionPosteriorALaInicialInCorrecta()
+        public void ConsignacionPosteriorALaInicialCorrectaEnOtraCiudad()
         {
             string numeroDeCuenta = "1001";
             string nombreDeCuenta = "Cuenta de Ejemplo";
@@ -82,10 +106,17 @@ namespace Domain.Test
             cuentaDeAhorro.Numero = numeroDeCuenta;
             cuentaDeAhorro.Nombre = nombreDeCuenta;
             cuentaDeAhorro.Ciudad = ciudad;
-            cuentaDeAhorro.Saldo = 30000;
-            string respuesta = cuentaDeAhorro.Consignar(49950, "Valledupar");
+            cuentaDeAhorro.Consignar(50000, "Bogota");
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${cuentaDeAhorro.Saldo} pesos", respuesta);
+            IList<string> errores = cuentaDeAhorro.CanConsign(50000);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${50000 + 39950} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Consignar(49950, "Valledupar");
+
+            Assert.AreEqual(esperado, obtenido);
         }
 
         //Retiros
@@ -96,14 +127,20 @@ namespace Domain.Test
             string numeroDeCuenta = "1001";
             string nombreDeCuenta = "Cuenta de Ejemplo";
             string ciudad = "Valledupar";
-            ServicioFinanciero servicios = new CuentaAhorro();
-            servicios.Numero = numeroDeCuenta;
-            servicios.Nombre = nombreDeCuenta;
-            servicios.Ciudad = ciudad;
+            ServicioFinanciero cuentaDeAhorro = new CuentaAhorro();
+            cuentaDeAhorro.Numero = numeroDeCuenta;
+            cuentaDeAhorro.Nombre = nombreDeCuenta;
+            cuentaDeAhorro.Ciudad = ciudad;
 
-            string respuesta = servicios.Retirar(-500);
+            IList<string> errores = cuentaDeAhorro.CanWithDraw(-500);
+            string obtenido;
+            string esperado = "El valor a retirar es invalido";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Retirar(-500);
 
-            Assert.AreEqual("El valor a retirar es invalido", respuesta);
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void SaldoMenorAlMinimo()
@@ -111,14 +148,20 @@ namespace Domain.Test
             string numeroDeCuenta = "1001";
             string nombreDeCuenta = "Cuenta de Ejemplo";
             string ciudad = "Valledupar";
-            ServicioFinanciero servicios = new CuentaAhorro();
-            servicios.Numero = numeroDeCuenta;
-            servicios.Nombre = nombreDeCuenta;
-            servicios.Ciudad = ciudad;
+            ServicioFinanciero cuentaDeAhorro = new CuentaAhorro();
+            cuentaDeAhorro.Numero = numeroDeCuenta;
+            cuentaDeAhorro.Nombre = nombreDeCuenta;
+            cuentaDeAhorro.Ciudad = ciudad;
 
-            string respuesta = servicios.Retirar(500);
+            IList<string> errores = cuentaDeAhorro.CanWithDraw(500);
+            string obtenido;
+            string esperado = $"No es posible realizar el Retiro, el nuevo saldo es menor al minimo, ${CuentaAhorro.SALDO_MINIMO}";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Retirar(500);
 
-            Assert.AreEqual("No es posible realizar el Retiro, el nuevo saldo es menor al minimo", respuesta);
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void RetiroConExito()
@@ -126,15 +169,21 @@ namespace Domain.Test
             string numeroDeCuenta = "1001";
             string nombreDeCuenta = "Cuenta de Ejemplo";
             string ciudad = "Valledupar";
-            ServicioFinanciero servicios = new CuentaAhorro();
-            servicios.Numero = numeroDeCuenta;
-            servicios.Nombre = nombreDeCuenta;
-            servicios.Ciudad = ciudad;
-            servicios.Saldo = 30000;
+            ServicioFinanciero cuentaDeAhorro = new CuentaAhorro();
+            cuentaDeAhorro.Numero = numeroDeCuenta;
+            cuentaDeAhorro.Nombre = nombreDeCuenta;
+            cuentaDeAhorro.Ciudad = ciudad;
+            cuentaDeAhorro.Saldo = 30000;
 
-            string respuesta = servicios.Retirar(500);
+            IList<string> errores = cuentaDeAhorro.CanWithDraw(500);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${29500} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = cuentaDeAhorro.Retirar(500);
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${servicios.Saldo} pesos", respuesta);
+            Assert.AreEqual(esperado, obtenido);
         }
 
     }

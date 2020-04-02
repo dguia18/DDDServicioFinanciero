@@ -1,6 +1,7 @@
 ﻿using Domain.Base;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Domain.Entities
 {
@@ -42,8 +43,8 @@ namespace Domain.Entities
             this.Movimientos.Add(retiro);
         }
 
-        public abstract IReadOnlyList<String> CanConsign(decimal valor);
-        public abstract IReadOnlyList<String> CanWithDraw(decimal valor);
+        public abstract IList<string> CanConsign(decimal valor);
+        public abstract IList<string> CanWithDraw(decimal valor);
 
         public override string ToString()
         {

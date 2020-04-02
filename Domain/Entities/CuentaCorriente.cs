@@ -6,14 +6,14 @@ namespace Domain.Entities
     public class CuentaCorriente : ServicioFinanciero
     {
         public decimal CupoDeSobregiro { get; set; }
-        private const decimal VALOR_MINIMO_CONSIGNACION_INICIAL = 10000;
+        public const decimal VALOR_MINIMO_CONSIGNACION_INICIAL = 10000;
         private const decimal CUATRO_X_MIL = 4/1000;
         public bool tieneConsignaciones { get; set; }
         public CuentaCorriente()
         {
             this.tieneConsignaciones = false;
         }
-        public override IReadOnlyList<string> CanConsign(decimal valor)
+        public override IList<string> CanConsign(decimal valor)
         {
             var errores = new List<string>();
             if (this.GetConsignaciones().Count == 0 && valor < VALOR_MINIMO_CONSIGNACION_INICIAL)
@@ -24,7 +24,7 @@ namespace Domain.Entities
             return errores;
         }
 
-        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        public override IList<string> CanWithDraw(decimal valor)
         {
             var errores = new List<string>();            
             decimal nuevoSaldo = this.Saldo - valor;

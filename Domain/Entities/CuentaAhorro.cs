@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Domain.Entities
 {
@@ -9,8 +10,8 @@ namespace Domain.Entities
         private const int CANTIDAD_DE_RETIROS_SIN_COSTO = 3;
         private const decimal COSTO_POR_RETIRO = 5000;
         private const int DESCUENTO_POR_SUCURSAL_EN_OTRA_CIUDAD = 10000;
-        private const decimal VALOR_CONSIGNACION_INICIAL = 50000;
-        private const decimal SALDO_MINIMO = 20000;
+        public const decimal VALOR_CONSIGNACION_INICIAL = 50000;
+        public const decimal SALDO_MINIMO = 20000;
 
         public CuentaAhorro()
         {
@@ -21,7 +22,7 @@ namespace Domain.Entities
         {
             this.isConsignacionInicial = isConsignacionInicial;
         }
-        public override IReadOnlyList<string> CanConsign(decimal valor)
+        public override IList<string> CanConsign(decimal valor)
         {
             var errores = new List<string>();
             if (this.GetConsignaciones().Count == 0 && valor < VALOR_CONSIGNACION_INICIAL)
@@ -95,16 +96,16 @@ namespace Domain.Entities
 
         private decimal IncluirCostoPorCiudadDiferente(decimal valor, string ciudadDeOrigen)
         {
-            return !ciudadDeOrigen.Equals(this.Ciudad) ? valor * (1 - DESCUENTO_POR_SUCURSAL_EN_OTRA_CIUDAD) : valor;
+            return !ciudadDeOrigen.Equals(this.Ciudad) ? valor  - DESCUENTO_POR_SUCURSAL_EN_OTRA_CIUDAD : valor;
         }
-        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        public override IList<string> CanWithDraw(decimal valor)
         {
             var errores = new List<string>();
             decimal nuevoSaldo = Saldo - valor;
             if (nuevoSaldo < SALDO_MINIMO)
                 errores.Add($"No es posible realizar el Retiro, el nuevo saldo es menor al minimo, ${SALDO_MINIMO}");        
             if (valor <= 0)
-                errores.Add("El valor a consignar es incorrecto");
+                errores.Add("El valor a retirar es invalido");
             return errores;
         }
 

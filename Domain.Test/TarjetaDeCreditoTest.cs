@@ -22,9 +22,16 @@ namespace Domain.Test
             tarjetaDeCredito.Numero = numeroDeCuenta;
             tarjetaDeCredito.Nombre = nombreDeCuenta;
             tarjetaDeCredito.ContratarCupo(1000000);
-            string respuesta = tarjetaDeCredito.Consignar(-500, "No implementa");
+            IList<string> errores = tarjetaDeCredito.CanConsign(-500);
+            string obtenido;
+            string esperado = "El valor a abonar es incorrecto";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = tarjetaDeCredito.Consignar(-500, "No implementa");
 
-            Assert.AreEqual("El valor a abonar es incorrecto", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void AbonoMayorAlSaldo()
@@ -35,9 +42,16 @@ namespace Domain.Test
             tarjetaDeCredito.Numero = numeroDeCuenta;
             tarjetaDeCredito.Nombre = nombreDeCuenta;
             tarjetaDeCredito.ContratarCupo(1000000);
-            string respuesta = tarjetaDeCredito.Consignar(5000000, "No implementa");
+            IList<string> errores = tarjetaDeCredito.CanConsign(5000000);
+            string obtenido;
+            string esperado = $"El valor del abono no puede superar el saldo de: {tarjetaDeCredito.Saldo}";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = tarjetaDeCredito.Consignar(5000000, "No implementa");
 
-            Assert.AreEqual($"El valor del abono no puede superar el saldo de: {tarjetaDeCredito.Saldo}", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void AbonoCorrecto()
@@ -48,9 +62,16 @@ namespace Domain.Test
             tarjetaDeCredito.Numero = numeroDeCuenta;
             tarjetaDeCredito.Nombre = nombreDeCuenta;
             tarjetaDeCredito.ContratarCupo(2000000);
-            string respuesta = tarjetaDeCredito.Consignar(1500000, "No implementa");
+            IList<string> errores = tarjetaDeCredito.CanConsign(1500000);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${500000} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = tarjetaDeCredito.Consignar(1500000, "No implementa");
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${tarjetaDeCredito.Saldo} pesos", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
 
         //Retiros
@@ -64,9 +85,16 @@ namespace Domain.Test
             tarjetaDeCredito.Numero = numeroDeCuenta;
             tarjetaDeCredito.Nombre = nombreDeCuenta;
             tarjetaDeCredito.ContratarCupo(2000000);
-            string respuesta = tarjetaDeCredito.Retirar(-500);
+            IList<string> errores = tarjetaDeCredito.CanWithDraw(-500);
+            string obtenido;
+            string esperado = "El valor a avanzar es incorrecto";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = tarjetaDeCredito.Retirar(-500);
 
-            Assert.AreEqual("El valor a avanzar es incorrecto", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
         [Test]
         public void AvanceMayorAlCupo()
@@ -77,10 +105,17 @@ namespace Domain.Test
             tarjetaDeCredito.Numero = numeroDeCuenta;
             tarjetaDeCredito.Nombre = nombreDeCuenta;
             tarjetaDeCredito.ContratarCupo(2000000);
-            string respuesta = tarjetaDeCredito.Retirar(2500000);
+            IList<string> errores = tarjetaDeCredito.CanWithDraw(2500000);
+            string obtenido;
+            string esperado = $"El valor a avanzar no puede ser mayor al cupo pre-aprobado: " +
+                $"{tarjetaDeCredito.CupoPreAprobado}";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = tarjetaDeCredito.Retirar(2500000);
 
-            Assert.AreEqual($"El valor a avanzar no puede ser mayor al cupo pre-aprobado: " +
-                $"{tarjetaDeCredito.CupoPreAprobado}", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);            
         }
         
         [Test]
@@ -93,10 +128,16 @@ namespace Domain.Test
             tarjetaDeCredito.Nombre = nombreDeCuenta;
             tarjetaDeCredito.ContratarCupo(2000000);
 
-            
-            string respuesta = tarjetaDeCredito.Retirar(1500000); 
+            IList<string> errores = tarjetaDeCredito.CanWithDraw(1500000);
+            string obtenido;
+            string esperado = $"Su Nuevo Saldo es de ${3500000} pesos";
+            if (errores.Contains(esperado))
+                obtenido = esperado;
+            else
+                obtenido = tarjetaDeCredito.Retirar(1500000);
 
-            Assert.AreEqual($"Su Nuevo Saldo es de ${tarjetaDeCredito.Saldo} pesos", respuesta);
+
+            Assert.AreEqual(esperado, obtenido);
         }
     }
 }

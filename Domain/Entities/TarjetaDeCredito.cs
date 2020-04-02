@@ -12,7 +12,7 @@ namespace Domain.Entities
             this.CupoPreAprobado = valor;
             this.Saldo = valor;
         }
-        public override IReadOnlyList<string> CanConsign(decimal valor)
+        public override IList<string> CanConsign(decimal valor)
         {
             var errores = new List<string>();
             if (valor > this.Saldo)            
@@ -62,7 +62,7 @@ namespace Domain.Entities
             this.Saldo -= 2 * valor;
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
-        public override IReadOnlyList<string> CanWithDraw(decimal valor)
+        public override IList<string> CanWithDraw(decimal valor)
         {
             var errores = new List<string>();
             TimeSpan time = DateTime.Now - this.FechaCreacion;
