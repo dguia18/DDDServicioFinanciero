@@ -1,17 +1,17 @@
 ﻿
 namespace Domain.Entities
 {
-    public interface 
-        IServicioFinanciero
-    {
+	public interface
+		IServicioFinanciero
+	{
 
-        string Nombre { get; set; }
-        string Numero { get; set; }
-        double Saldo { get; }
+		string Nombre { get; set; }
+		string Numero { get; set; }
+		double Saldo { get; }
 
-        string Retirar(decimal valor);
-        string Consignar(decimal valor, string ciudadDeOrigen);
-        string Trasladar(IServicioFinanciero servicioFinanciero, decimal valor);
+		string Retirar(double valor);
+		string Consignar(double valor, string ciudadDeOrigen);
+		string Trasladar(IServicioFinanciero servicioFinanciero, double valor);
 
-    }
+	}
 }

@@ -32,11 +32,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("FechaMovimiento")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("ValorConsignacion")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("ValorConsignacion")
+                        .HasColumnType("float");
 
-                    b.Property<decimal>("ValorRetiro")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("ValorRetiro")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -65,8 +65,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Numero")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Saldo")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Saldo")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -99,8 +99,8 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entities.ServicioFinanciero");
 
-                    b.Property<decimal>("CupoDeSobregiro")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("CupoDeSobregiro")
+                        .HasColumnType("float");
 
                     b.Property<bool>("tieneConsignaciones")
                         .HasColumnType("bit");

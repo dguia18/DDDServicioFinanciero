@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CuentaBancaria",
+                name: "ServicioFinanciero",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -16,11 +16,16 @@ namespace Infrastructure.Migrations
                     Nombre = table.Column<string>(nullable: true),
                     Numero = table.Column<string>(nullable: true),
                     Saldo = table.Column<double>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false)
+                    Ciudad = table.Column<string>(nullable: true),
+                    Discriminator = table.Column<string>(nullable: false),
+                    TieneConsignacion = table.Column<bool>(nullable: true),
+                    DiasDeTermino = table.Column<int>(nullable: true),
+                    CupoDeSobregiro = table.Column<double>(nullable: true),
+                    tieneConsignaciones = table.Column<bool>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CuentaBancaria", x => x.Id);
+                    table.PrimaryKey("PK_ServicioFinanciero", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,9 +43,9 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_MovimientoFinanciero", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovimientoFinanciero_CuentaBancaria_CuentaBancariaId",
+                        name: "FK_MovimientoFinanciero_ServicioFinanciero_CuentaBancariaId",
                         column: x => x.CuentaBancariaId,
-                        principalTable: "CuentaBancaria",
+                        principalTable: "ServicioFinanciero",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -57,7 +62,7 @@ namespace Infrastructure.Migrations
                 name: "MovimientoFinanciero");
 
             migrationBuilder.DropTable(
-                name: "CuentaBancaria");
+                name: "ServicioFinanciero");
         }
     }
 }
