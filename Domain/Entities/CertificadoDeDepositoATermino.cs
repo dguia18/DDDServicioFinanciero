@@ -33,7 +33,7 @@ namespace Domain.Entities
         {
             if (CanConsign(valor).Count > 0)
                 throw new InvalidOperationException();
-            this.EjecutarConsignacion(valor);
+            this.CrearMovimientoDeIngreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
         private string ValidarMontoNoNegativoDeConsignacion(decimal valor)
@@ -72,7 +72,7 @@ namespace Domain.Entities
             }
             else
             {
-                this.EjecutarConsignacion(valor);
+                this.CrearMovimientoDeIngreso(valor);
                 this.TieneConsignacion = true;
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
@@ -98,7 +98,7 @@ namespace Domain.Entities
         {
             if (CanWithDraw(valor).Count > 0)
                 throw new InvalidOperationException();
-            this.EjecutarRetiro(valor);
+            this.CrearMovimientoDeEgreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
 
@@ -137,7 +137,7 @@ namespace Domain.Entities
             decimal nuevoSaldo = this.Saldo - valor;
             if (nuevoSaldo >= 0)
             {
-                this.EjecutarRetiro(valor);
+                this.CrearMovimientoDeEgreso(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
             else

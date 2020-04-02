@@ -24,7 +24,7 @@ namespace Domain.Entities
 
         public abstract string Consignar(decimal valor, string ciudadDeOrigen);
                        
-        protected void EjecutarConsignacion(decimal valor)
+        protected void CrearMovimientoDeIngreso(decimal valor)
         {
             MovimientoFinanciero movimiento = new MovimientoFinanciero();
             movimiento.ValorConsignacion = valor;
@@ -34,7 +34,7 @@ namespace Domain.Entities
         }
         public abstract string Retirar(decimal valor);        
 
-        protected void EjecutarRetiro(decimal valor)
+        protected void CrearMovimientoDeEgreso(decimal valor)
         {
             MovimientoFinanciero retiro = new MovimientoFinanciero();
             retiro.ValorRetiro = valor;

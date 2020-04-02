@@ -39,7 +39,7 @@ namespace Domain.Entities
         {
             if (CanConsign(valor).Count > 0)
                 throw new InvalidOperationException();
-            this.EjecutarConsignacion(valor);
+            this.CrearMovimientoDeIngreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
         private string ValidarValorNoNegativoAConsignar(decimal valor)
@@ -60,7 +60,7 @@ namespace Domain.Entities
             string respuesta;
             if (tieneConsignaciones)
             {
-                this.EjecutarConsignacion(valor);
+                this.CrearMovimientoDeIngreso(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
             else
@@ -74,7 +74,7 @@ namespace Domain.Entities
             string respuesta;
             if(valor > VALOR_MINIMO_CONSIGNACION_INICIAL)
             {
-                this.EjecutarConsignacion(valor);
+                this.CrearMovimientoDeIngreso(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
                 this.tieneConsignaciones = true;
             }
@@ -87,7 +87,7 @@ namespace Domain.Entities
         public override string Retirar(decimal valor)
         {
             valor = DebitarCuatroXMil(valor);
-            this.EjecutarRetiro(valor);
+            this.CrearMovimientoDeEgreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }   
         private string ValidarValorNoNegativo(decimal valor)
@@ -110,7 +110,7 @@ namespace Domain.Entities
             if (nuevoSaldo >= CupoDeSobregiro)
             {
                 valor = DebitarCuatroXMil(valor);
-                this.EjecutarRetiro(valor);
+                this.CrearMovimientoDeEgreso(valor);
                 respuesta = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
             else

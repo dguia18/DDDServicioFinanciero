@@ -39,7 +39,7 @@ namespace Domain.Entities
             if (CanConsign(valor).Count != 0)
                 throw new InvalidOperationException();
             valor = this.IncluirCostoPorCiudadDiferente(valor, ciudadDeOrigen);
-            this.EjecutarConsignacion(valor);
+            this.CrearMovimientoDeIngreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
         private string IsPrimeraConsignacion(decimal valor, string ciudadDeOrigen)
@@ -64,7 +64,7 @@ namespace Domain.Entities
             {
                 this.isConsignacionInicial = true;
                 IncluirCostoPorCiudadDiferente(valor, ciudadDeOrigen);
-                EjecutarConsignacion(valor);
+                CrearMovimientoDeIngreso(valor);
                 mensaje = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
             else
@@ -83,7 +83,7 @@ namespace Domain.Entities
             if (valor > 0)
             {
                 valor = this.IncluirCostoPorCiudadDiferente(valor, ciudadDeOrigen);
-                this.EjecutarConsignacion(valor);
+                this.CrearMovimientoDeIngreso(valor);
                 mensaje = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
             else
@@ -114,7 +114,7 @@ namespace Domain.Entities
             if (CanWithDraw(valor).Count > 0)
                 throw new InvalidOperationException();
             valor = IncluirCostoPorCantidadDeRetiros(valor);
-            this.EjecutarRetiro(valor);
+            this.CrearMovimientoDeEgreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
 
@@ -140,7 +140,7 @@ namespace Domain.Entities
             if (nuevoSaldo > SALDO_MINIMO)
             {
                 valor = IncluirCostoPorCantidadDeRetiros(valor);
-                this.EjecutarRetiro(valor);
+                this.CrearMovimientoDeEgreso(valor);
                 mensaje = $"Su Nuevo Saldo es de ${this.Saldo} pesos";
             }
             else

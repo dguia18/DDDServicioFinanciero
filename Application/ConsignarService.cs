@@ -20,7 +20,7 @@ namespace Application
             if (cuenta != null)
             {
                 string respuesta;
-                IReadOnlyList <String> errores = cuenta.CanConsign(request.Valor);
+                IList <string> errores = cuenta.CanConsign(request.Valor);
                 if(errores.Count!=0)
                 {
                     respuesta = String.Join(", ", errores);

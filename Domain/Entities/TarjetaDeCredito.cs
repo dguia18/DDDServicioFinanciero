@@ -58,7 +58,7 @@ namespace Domain.Entities
         private string EjecutarAbono(decimal valor)
         {
             this.CupoPreAprobado += valor;
-            this.EjecutarConsignacion(valor);
+            this.CrearMovimientoDeIngreso(valor);
             this.Saldo -= 2 * valor;
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
@@ -111,7 +111,7 @@ namespace Domain.Entities
         {
             this.CupoPreAprobado -= valor;
             this.Saldo += 2 * valor;
-            this.EjecutarRetiro(valor);
+            this.CrearMovimientoDeEgreso(valor);
             return ($"Su Nuevo Saldo es de ${this.Saldo} pesos");
         }
 
