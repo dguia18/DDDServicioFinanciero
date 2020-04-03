@@ -42,7 +42,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CuentaBancariaId");
 
-                    b.ToTable("MovimientoFinanciero");
+                    b.ToTable("MovimientosFinancieros");
                 });
 
             modelBuilder.Entity("Domain.Entities.ServicioFinanciero", b =>
@@ -82,9 +82,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("DiasDeTermino")
                         .HasColumnType("int");
 
-                    b.Property<bool>("TieneConsignacion")
-                        .HasColumnType("bit");
-
                     b.HasDiscriminator().HasValue("CertificadoDeDepositoATermino");
                 });
 
@@ -102,10 +99,17 @@ namespace Infrastructure.Migrations
                     b.Property<double>("CupoDeSobregiro")
                         .HasColumnType("float");
 
-                    b.Property<bool>("tieneConsignaciones")
-                        .HasColumnType("bit");
-
                     b.HasDiscriminator().HasValue("CuentaCorriente");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TarjetaDeCredito", b =>
+                {
+                    b.HasBaseType("Domain.Entities.ServicioFinanciero");
+
+                    b.Property<double>("CupoPreAprobado")
+                        .HasColumnType("float");
+
+                    b.HasDiscriminator().HasValue("TarjetaDeCredito");
                 });
 
             modelBuilder.Entity("Domain.Entities.MovimientoFinanciero", b =>

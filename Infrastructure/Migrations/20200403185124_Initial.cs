@@ -18,10 +18,9 @@ namespace Infrastructure.Migrations
                     Saldo = table.Column<double>(nullable: false),
                     Ciudad = table.Column<string>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
-                    TieneConsignacion = table.Column<bool>(nullable: true),
                     DiasDeTermino = table.Column<int>(nullable: true),
                     CupoDeSobregiro = table.Column<double>(nullable: true),
-                    tieneConsignaciones = table.Column<bool>(nullable: true)
+                    CupoPreAprobado = table.Column<double>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,7 +28,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovimientoFinanciero",
+                name: "MovimientosFinancieros",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -41,9 +40,9 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovimientoFinanciero", x => x.Id);
+                    table.PrimaryKey("PK_MovimientosFinancieros", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovimientoFinanciero_ServicioFinanciero_CuentaBancariaId",
+                        name: "FK_MovimientosFinancieros_ServicioFinanciero_CuentaBancariaId",
                         column: x => x.CuentaBancariaId,
                         principalTable: "ServicioFinanciero",
                         principalColumn: "Id",
@@ -51,15 +50,15 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovimientoFinanciero_CuentaBancariaId",
-                table: "MovimientoFinanciero",
+                name: "IX_MovimientosFinancieros_CuentaBancariaId",
+                table: "MovimientosFinancieros",
                 column: "CuentaBancariaId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MovimientoFinanciero");
+                name: "MovimientosFinancieros");
 
             migrationBuilder.DropTable(
                 name: "ServicioFinanciero");

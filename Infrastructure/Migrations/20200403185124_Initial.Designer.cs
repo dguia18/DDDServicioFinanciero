@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BancoContext))]
-    [Migration("20200402180852_Initial")]
+    [Migration("20200403185124_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CuentaBancariaId");
 
-                    b.ToTable("MovimientoFinanciero");
+                    b.ToTable("MovimientosFinancieros");
                 });
 
             modelBuilder.Entity("Domain.Entities.ServicioFinanciero", b =>
@@ -84,9 +84,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("DiasDeTermino")
                         .HasColumnType("int");
 
-                    b.Property<bool>("TieneConsignacion")
-                        .HasColumnType("bit");
-
                     b.HasDiscriminator().HasValue("CertificadoDeDepositoATermino");
                 });
 
@@ -104,10 +101,17 @@ namespace Infrastructure.Migrations
                     b.Property<double>("CupoDeSobregiro")
                         .HasColumnType("float");
 
-                    b.Property<bool>("tieneConsignaciones")
-                        .HasColumnType("bit");
-
                     b.HasDiscriminator().HasValue("CuentaCorriente");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TarjetaDeCredito", b =>
+                {
+                    b.HasBaseType("Domain.Entities.ServicioFinanciero");
+
+                    b.Property<double>("CupoPreAprobado")
+                        .HasColumnType("float");
+
+                    b.HasDiscriminator().HasValue("TarjetaDeCredito");
                 });
 
             modelBuilder.Entity("Domain.Entities.MovimientoFinanciero", b =>
