@@ -43,9 +43,9 @@ namespace ConsoleUI
             #region  Crear
 
             CrearServicioFinancieroService _service = new CrearServicioFinancieroService(new UnitOfWork(context));
-            var requestCrer = new CrearCuentaBancariaRequest() { Numero = "524255", Nombre = "Boris Arturo" };
+            var requestCrer = new CrearServicioFinancieroRequest() { Numero = "524255", Nombre = "Boris Arturo" };
 
-            CrearCuentaBancariaResponse responseCrear = _service.Ejecutar(requestCrer);
+            CrearServicioFinancieroResponse responseCrear = _service.Ejecutar(requestCrer);
 
             System.Console.WriteLine(responseCrear.Mensaje);
             #endregion
