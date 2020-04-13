@@ -11,6 +11,7 @@ namespace Domain.Entities
 		private const int DESCUENTO_POR_SUCURSAL_EN_OTRA_CIUDAD = 10000;
 		public const double VALOR_CONSIGNACION_INICIAL = 50000;
 		public const double SALDO_MINIMO = 20000;
+		
 	
 		public override IList<string> CanConsign(double valor)
 		{
